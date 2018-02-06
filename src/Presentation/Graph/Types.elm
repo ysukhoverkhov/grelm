@@ -1,28 +1,24 @@
 module Presentation.Graph.Types
     exposing
-        ( Coordinate
-        , makeCoordinate
-        , toFloat
+        ( Position
         , Color
         , makeColor
         , toHex
+        , Id
+        , initialId
+        , makeId
+        , (==)
         )
 
 import Hex
 
 
-type Coordinate
-    = Coordinate Float
-
-
-makeCoordinate : Float -> Coordinate
-makeCoordinate =
-    Coordinate
-
-
-toFloat : Coordinate -> Float
-toFloat (Coordinate f) =
-    f
+type alias Position =
+    { width : Float
+    , height : Float
+    , x : Float
+    , y : Float
+    }
 
 
 type alias Color =
@@ -40,3 +36,27 @@ makeColor ( red, green, blue ) =
 toHex : Color -> String
 toHex color =
     Hex.toString color.red ++ Hex.toString color.green ++ Hex.toString color.blue
+
+
+type Id
+    = Id Int
+
+
+initialId : Id
+initialId =
+    Id 0
+
+
+makeId : Id -> Id
+makeId (Id n) =
+    Id (n + 1)
+
+
+(==) : Id -> Id -> Bool
+(==) (Id a) (Id b) =
+    case compare a b of
+        EQ ->
+            True
+
+        _ ->
+            False

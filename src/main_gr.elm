@@ -28,8 +28,7 @@ main =
 
 
 type alias Model =
-    { position : Mouse.Position
-    , drag : Maybe Drag
+    { drag : Maybe Drag
     , module_ : Maybe Module
     }
 
@@ -47,8 +46,7 @@ init =
 
 initialModel : Model
 initialModel =
-    { position = Mouse.Position 200 200
-    , drag = Nothing
+    { drag = Nothing
     , module_ = StubData.stub |> present |> Result.toMaybe
     }
 
@@ -64,24 +62,23 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update =
-    \msg -> \model -> ( updateHelp msg model, Cmd.none )
+update msg model =
+    ( updateHelp msg model, Cmd.none )
 
 
 updateHelp : Msg -> Model -> Model
-updateHelp msg ({ position, drag } as model) =
-    case msg of
-        DragStart xy ->
-            Model position (Just (Drag xy xy)) Nothing
-
-        DragAt xy ->
-            Model position (Maybe.map (\{ start } -> Drag start xy) drag) Nothing
-
-        DragEnd _ ->
-            Model (getPosition model) Nothing Nothing
+updateHelp msg model =
+    model
 
 
 
+-- case msg of
+--     DragStart xy ->
+--         Model position (Just (Drag xy xy)) Nothing
+-- DragAt xy ->
+--     Model position (Maybe.map (\{ start } -> Drag start xy) drag) Nothing
+-- DragEnd _ ->
+--     Model (getPosition model) Nothing Nothing
 -- SUBSCRIPTIONS
 
 
@@ -126,28 +123,26 @@ viewVisual { visual } children =
             , cursor move
             , borderRadius <| px <| 4
             , backgroundColor <| hex <| PT.toHex <| visual.color
-            , Css.width <| px <| PT.toFloat <| visual.position.width
-            , Css.height <| px <| PT.toFloat <| visual.position.height
-            , Css.left <| px <| PT.toFloat <| visual.position.x
-            , Css.top <| px <| PT.toFloat <| visual.position.y
+            , Css.width <| px <| visual.position.width
+            , Css.height <| px <| visual.position.height
+            , Css.left <| px <| visual.position.x
+            , Css.top <| px <| visual.position.y
             ]
         ]
-        (text visual.name :: children)
-
-
-getPosition : Model -> Mouse.Position
-getPosition { position, drag } =
-    case drag of
-        Nothing ->
-            position
-
-        Just { start, current } ->
-            Mouse.Position
-                (position.x + current.x - start.x)
-                (position.y + current.y - start.y)
+        (text (visual.name ++ " " ++ (toString visual.id)) :: children)
 
 
 
+-- getPosition : Maybe Drag -> Visual -> Mouse.Position
+-- getPosition drag visual =
+--     case drag of
+--         Nothing ->
+--             { x = visual.position.x, y = visual.position.y }
+--
+--         Just { start, current } ->
+--             Mouse.Position
+--                 (position.x + current.x - start.x)
+--                 (position.y + current.y - start.y)
 -- onMouseDown : Attribute Msg
 
 
